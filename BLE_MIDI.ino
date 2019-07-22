@@ -30,6 +30,8 @@ bool deviceConnected = false;
 HardwareSerial SerialMIDI(2);
 MidiInterface<HardwareSerial> mididev(SerialMIDI);
 
+uint8_t pinLED = 2;
+
 uint8_t midiPacket[] = {
     0x80, // header
     0x80, // timestamp, not implemented
@@ -43,11 +45,13 @@ class MyServerCallbacks : public BLEServerCallbacks
     void onConnect(BLEServer *pServer)
     {
         deviceConnected = true;
+        digitalWrite(pinLED, HIGH);
     };
 
     void onDisconnect(BLEServer *pServer)
     {
         deviceConnected = false;
+        digitalWrite(pinLED, LOW);
     }
 };
 
@@ -109,6 +113,9 @@ void setup()
 {
     Serial.begin(115200);
     SerialMIDI.begin(31250); //MIDI has 31250, seems to work on esp32
+
+    pinMode(pinLED, OUTPUT);
+    digitalWrite(pinLED, LOW);
 
     BLEDevice::init("ESP32 BLE-MIDI");
 
